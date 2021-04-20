@@ -34,8 +34,10 @@ $ docker compose up -d --build
 # Run migrations
 
 ```
-$ docker compose exec web python manage.py flush --no-input
-$ docker compose exec web python manage.py migrate
+$ docker exec -it makoto-niijima_web_1 python manage.py flush --no-input
+$ docker exec -it makoto-niijima_web_1 python manage.py makemigrations
+$ docker exec -it makoto-niijima_web_1 python manage.py migrate
+$ docker exec -it makoto-niijima_web_1 python manage.py createsuperuser
 ```
 
 View running app at localhost:8000
@@ -96,6 +98,7 @@ alias ds_console='docker exec -it makoto-niijima_web_1 python manage.py shell'
 alias ds_terminal='docker exec -it makoto-niijima_web_1 /bin/sh'
 alias ds_logs='docker-compose logs -f --tail 20 makoto-niijima_web_1'
 alias ds_test='docker exec -it makoto-niijima_web_1 python manage.py test'
+alias ds_exec='docker exec -it makoto-niijima_web_1'
 ```
 
 # Access the docker container shell while running

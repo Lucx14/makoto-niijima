@@ -1,0 +1,8 @@
+<h1>Confirm delete page</h1>
+<a href="{% url 'articles' %}">Go back</a>
+
+<form action="" method="POST">
+    {% csrf_token %}
+    <p>Are you sure you want to delete this article?</p>
+    <input type="submit" value="Delete" />
+</form>
