@@ -83,3 +83,6 @@ USE_L10N = True
 USE_TZ = True
 STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# need to set this to use the Login required mixin in the views
+LOGIN_URL = 'login'

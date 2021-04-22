@@ -1,28 +1,39 @@
-<h1>Articles List</h1>
+{% extends 'base/main.html' %}
 
-<hr>
-{% if request.user.is_authenticated %}
-    <h4>Logged in user: {{ request.user }}</h4>
-{% else %}
-    <h4>User is not logged in</h4>
-{% endif %}
-<hr>
-
-<a href="{% url 'article-new' %}">New Article</a>
-
-<table>
-    <tr>
-        <th>Articles</th>
-    </tr>
-    {% for article in articles %}
+{% block content %}
+    <h1>Articles List</h1>
+    <hr>
+    {% if request.user.is_authenticated %}
+        <h4>Logged in user: {{ request.user }}</h4>
+        <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+        <h4>User is not logged in</h4>
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'signup' %}">Sign up</a>
+    {% endif %}
+    <hr>
+    {% if request.user.is_authenticated %}
+        <a href="{% url 'article-new' %}">New Article</a>
+    {% endif %}
+    <table>
         <tr>
-            <td>Title: {{ article.title }}</td>
-            <td>Content: {{ article.body }}</td>
-            <td><a href="{% url 'article' article.id %}">View</a></td>
-            <td><a href="{% url 'article-edit' article.id %}">Edit</a></td>
-            <td><a href="{% url 'article-delete' article.id %}">Delete</a></td>
+            <th>Articles</th>
         </tr>
-    {% empty %}
-        <h3>No Articles in list</h3>
-    {% endfor %}
-</table>
+        {% for article in articles %}
+            <tr>
+                <td>Title: {{ article.title }}</td>
+                <td>Content: {{ article.body }}</td>
+                {% if request.user.is_authenticated %}
+                    <td><a href="{% url 'article' article.id %}">View</a></td>
+                {% endif %}
+                {% if request.user.is_authenticated and request.user == article.author %}
+                    <td><a href="{% url 'article-edit' article.id %}">Edit</a></td>
+                    <td><a href="{% url 'article-delete' article.id %}">Delete</a></td>
+                {% endif %}
+            </tr>
+        {% empty %}
+            <h3>No Articles in list</h3>
+        {% endfor %}
+    </table>
+{% endblock content %}
+

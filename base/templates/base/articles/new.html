@@ -1,8 +1,12 @@
-<h1>New article form!</h1>
-<a href="{% url 'articles' %}">Go back</a>
+{% extends 'base/main.html' %}
 
-<form action="" method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit">
-</form>
+{% block content %}
+    <h1>New article form!</h1>
+    <a href="{% url 'articles' %}">Go back</a>
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit">
+    </form>
+{% endblock content %}
