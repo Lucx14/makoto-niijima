@@ -41,6 +41,7 @@ class CustomLogoutView(LogoutView):
 
 
 class ArticleIndex(generic.ListView):
+    paginate_by = 5
     model = Article
     context_object_name = "articles"
     template_name = "base/articles/index.html"
