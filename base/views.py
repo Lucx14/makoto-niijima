@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.http import Http404
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Article
 from .forms import UserSignUpForm
 
