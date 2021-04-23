@@ -1,0 +1,13 @@
+{% extends 'base/main.html' %}
+<h1>NEW COMMENT FORM</h1>
+
+{% block content %}
+    <h1>New comment form!</h1>
+    <a href="{% url 'articles' %}">Go back</a>
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit">
+    </form>
+{% endblock content %}

@@ -1,11 +1,11 @@
 from django.views import generic
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.http import Http404
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Article
+from .models import Article, Comment
 from .forms import UserSignUpForm
 
 
@@ -45,6 +45,10 @@ class ArticleIndex(generic.ListView):
     model = Article
     context_object_name = "articles"
     template_name = "base/articles/index.html"
+    # concept of following certain authors like on medium
+    # clicking on author takes you to an that authors page which is a list of all their articles
+    # not sure the route, /users/:id/articles
+    # images
 
 
 class ArticleDetail(LoginRequiredMixin, generic.DetailView):
@@ -89,3 +93,25 @@ class ArticleDelete(LoginRequiredMixin, generic.DeleteView):
         if obj.author != self.request.user:
             raise Http404("You are not allowed to delete this Post")
         return super(ArticleDelete, self).dispatch(request, *args, **kwargs)
+
+
+class CommentCreate(LoginRequiredMixin, generic.CreateView):
+    model = Comment
+    fields = ['content']
+    template_name = "base/comments/new.html"
+
+    def get_success_url(self):
+        article_id = self.kwargs['pk']
+        return reverse_lazy('article', kwargs={'pk': article_id})
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.article = get_object_or_404(Article, id=self.kwargs.get('pk'))
+        return super(CommentCreate, self).form_valid(form)
+
+
+# class LikeCreate(LoginRequiredMixin, generic.CreateView):
+#     model = Like
+    # Do with page reloading first, then with JS/ajax!
+    # I want to do this with javascript!
+    # https://www.youtube.com/watch?v=kRrPtIjnxqs

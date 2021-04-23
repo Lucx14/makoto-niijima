@@ -1,3 +1,29 @@
 body {
     background-color: greenyellow;
 }
+
+.article-wrapper {
+    padding: 20px;
+    background-color: #79aec8;
+    border: solid 1px #447e9b;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.comments-wrapper {
+    border: solid 1px black;
+    background-color: beige;
+    padding: 10px;
+    margin: 15px;
+}
+
+.comment-wrapper {
+    border: 1px solid lightslategray;
+    background-color: lightpink;
+    padding: 5px;
+}
+
+.nav {
+    border: 1px solid black;
+}

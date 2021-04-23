@@ -1,5 +1,31 @@
 {% extends 'base/main.html' %}
-
+{% load static %}
 {% block content %}
-    <h1>TESTY TEST</h1>
+    <a href="{% url 'articles' %}">Go back</a>
+    <h1>{{ article.title }}</h1>
+    <h3>{{ article.author }}</h3>
+    <p>Follow</p>
+    <i class="fas fa-heart"></i>
+    <i class="far fa-heart"></i>
+    <p>{{ article.likes_count }} Likes!</p>
+    <div class="counter-test" id="counter-test-id"></div>
+    {% if request.user.is_authenticated %}
+        <div><a href="">Like</a></div>
+        <div><a href="{% url 'comment-new' article.id %}">Comment</a></div>
+    {% endif %}
+    {% if request.user.is_authenticated and request.user == article.author %}
+        <div><a href="{% url 'article-edit' article.id %}">Edit</a></div>
+        <div><a href="{% url 'article-delete' article.id %}">Delete</a></div>
+    {% endif %}
+    <p>{{ article.created_at }} - 2 min read</p>
+    <img src="{% static 'base/images/pic.png' %}" alt="some random image">
+    <p>{{ article.body }}</p>
+    <div class="comments-wrapper">
+        {% for comment in article.comment_set.all %}
+            <div class="comment-wrapper">
+                <div>Posted by: {{ comment.author }} on {{ comment.created_at }}</div>
+                <div>{{ comment.content }}</div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock content %}

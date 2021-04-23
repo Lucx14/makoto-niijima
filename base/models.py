@@ -23,6 +23,10 @@ class Article(models.Model):
     # def liked_by_current_user(self):
     #     return False
 
+    # For adding images
+    # https://www.geeksforgeeks.org/python-uploading-images-in-django/
+    # https://learndjango.com/tutorials/django-file-and-image-uploads-tutorial
+
 
 class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)

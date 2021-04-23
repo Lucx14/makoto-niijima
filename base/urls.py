@@ -9,6 +9,7 @@ from .views import (
     CustomLoginView,
     CustomLogoutView,
     SignUpView,
+    CommentCreate,
 )
 
 urlpatterns = [
@@ -20,4 +21,5 @@ urlpatterns = [
     path("article/new/", ArticleCreate.as_view(), name="article-new"),
     path("article/<int:pk>/edit/", ArticleUpdate.as_view(), name="article-edit"),
     path("article/<int:pk>/delete", ArticleDelete.as_view(), name="article-delete"),
+    path("article/<int:pk>/comments/new", CommentCreate.as_view(), name="comment-new"),
 ]
