@@ -1,27 +1,30 @@
 from django.views import generic
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Article, Comment
+from django.contrib.auth.decorators import login_required
+from .models import Article, Comment, Like
 from .forms import UserSignUpForm
 
 
 class SignUpView(generic.edit.CreateView):
-    template_name = 'base/users/new.html'
-    success_url = reverse_lazy('articles')
+    template_name = "base/users/new.html"
+    success_url = reverse_lazy("articles")
     form_class = UserSignUpForm
 
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated:
-            return redirect('articles')
+            return redirect("articles")
         return super(SignUpView, self).get(*args, **kwargs)
 
     def form_valid(self, form):
         valid = super(SignUpView, self).form_valid(form)
-        username, password = form.cleaned_data.get('username'), form.cleaned_data.get('password1')
+        username, password = form.cleaned_data.get("username"), form.cleaned_data.get(
+            "password1"
+        )
         new_user = authenticate(username=username, password=password)
         login(self.request, new_user)
         return valid
@@ -55,6 +58,12 @@ class ArticleDetail(LoginRequiredMixin, generic.DetailView):
     model = Article
     context_object_name = "article"
     template_name = "base/articles/show.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["liked_by_logged_in_user"] = self.object.liked_by(self.request.user)
+        context["comments"] = self.object.comment_set.all()
+        return context
 
 
 # maybe this should redirect to article and then user has a button to publish
@@ -97,21 +106,44 @@ class ArticleDelete(LoginRequiredMixin, generic.DeleteView):
 
 class CommentCreate(LoginRequiredMixin, generic.CreateView):
     model = Comment
-    fields = ['content']
+    fields = ["content"]
     template_name = "base/comments/new.html"
 
     def get_success_url(self):
-        article_id = self.kwargs['pk']
-        return reverse_lazy('article', kwargs={'pk': article_id})
+        article_id = self.kwargs["pk"]
+        return reverse_lazy("article", kwargs={"pk": article_id})
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.article = get_object_or_404(Article, id=self.kwargs.get('pk'))
+        form.instance.article = get_object_or_404(Article, id=self.kwargs.get("pk"))
         return super(CommentCreate, self).form_valid(form)
 
 
-# class LikeCreate(LoginRequiredMixin, generic.CreateView):
-#     model = Like
-    # Do with page reloading first, then with JS/ajax!
-    # I want to do this with javascript!
-    # https://www.youtube.com/watch?v=kRrPtIjnxqs
+# Do with page reloading first, then with JS/ajax!
+# https://www.youtube.com/watch?v=kRrPtIjnxqs
+@login_required
+def toggle_like(request, article_id):
+    article = get_object_or_404(Article, pk=article_id)
+    like = article.likes.filter(user=request.user)
+
+    if like.exists():
+        like.delete()
+    else:
+        new_like = Like(user=request.user, content_object=article)
+        new_like.save()
+
+    return HttpResponseRedirect(reverse_lazy("article", kwargs={"pk": article.id}))
+
+
+@login_required
+def toggle_comment_like(request, article_id, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    like = comment.likes.filter(user=request.user)
+
+    if like.exists():
+        like.delete()
+    else:
+        new_like = Like(user=request.user, content_object=comment)
+        new_like.save()
+
+    return HttpResponseRedirect(reverse_lazy("article", kwargs={"pk": article_id}))

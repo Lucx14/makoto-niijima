@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
+# For adding images
+# https://www.geeksforgeeks.org/python-uploading-images-in-django/
+# https://learndjango.com/tutorials/django-file-and-image-uploads-tutorial
 
 
 class Article(models.Model):
@@ -20,12 +23,8 @@ class Article(models.Model):
     def likes_count(self):
         return self.likes.count()
 
-    # def liked_by_current_user(self):
-    #     return False
-
-    # For adding images
-    # https://www.geeksforgeeks.org/python-uploading-images-in-django/
-    # https://learndjango.com/tutorials/django-file-and-image-uploads-tutorial
+    def liked_by(self, user):
+        return self.likes.filter(user=user).exists()
 
 
 class Comment(models.Model):
@@ -41,8 +40,8 @@ class Comment(models.Model):
     def likes_count(self):
         return self.likes.count()
 
-    # def liked_by_current_user(self):
-    #     return False
+    def liked_by(self, user):
+        return self.likes.filter(user=user).exists()
 
 
 class Like(models.Model):
