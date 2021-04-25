@@ -1,20 +1,17 @@
 from django.views import generic
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from .models import Article, Comment, Like
 from .forms import UserSignUpForm
-# Todo: Add images to Articles
-# Todo: Refactor likes to use ajax
-# Todo: Add some testing
-# Todo: a fontawesome comment icon
-# Todo: Show and hide comments
-# Todo: Styling - use a framework
-# https://www.youtube.com/watch?v=kRrPtIjnxqs
+
+# Todo: 1) Add images to Articles
+# Todo: 2) Add some testing
+# Todo: 3) Styling - use a framework
 
 
 class SignUpView(generic.edit.CreateView):
@@ -109,11 +106,17 @@ class ArticleDelete(LoginRequiredMixin, generic.DeleteView):
 class CommentCreate(LoginRequiredMixin, generic.CreateView):
     model = Comment
     fields = ["content"]
+    context_object_name = "comment"
     template_name = "base/comments/new.html"
 
     def get_success_url(self):
         article_id = self.kwargs["pk"]
         return reverse_lazy("article", kwargs={"pk": article_id})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["article_id"] = self.kwargs["pk"]
+        return context
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -123,29 +126,43 @@ class CommentCreate(LoginRequiredMixin, generic.CreateView):
 
 @login_required
 def toggle_like(request, article_id):
-    article = get_object_or_404(Article, pk=article_id)
-    like = article.likes.filter(user=request.user)
+    if request.method == "POST":
+        article = get_object_or_404(Article, pk=article_id)
+        like = article.likes.filter(user=request.user)
 
-    if request.user != article.author:
-        if like.exists():
-            like.delete()
-        else:
-            new_like = Like(user=request.user, content_object=article)
-            new_like.save()
+        if request.user != article.author:
+            if like.exists():
+                like.delete()
+            else:
+                new_like = Like(user=request.user, content_object=article)
+                new_like.save()
 
-    return HttpResponseRedirect(reverse_lazy("article", kwargs={"pk": article.id}))
+        data = {
+            "liked": article.likes.filter(user=request.user).exists(),
+            "likes": article.likes_count(),
+        }
+
+        return JsonResponse(data, safe=False)
+    return HttpResponseRedirect(reverse_lazy("article", kwargs={"pk": article_id}))
 
 
 @login_required
 def toggle_comment_like(request, article_id, comment_id):
-    comment = get_object_or_404(Comment, pk=comment_id)
-    like = comment.likes.filter(user=request.user)
+    if request.method == "POST":
+        comment = get_object_or_404(Comment, pk=comment_id)
+        like = comment.likes.filter(user=request.user)
 
-    if request.user != comment.author:
-        if like.exists():
-            like.delete()
-        else:
-            new_like = Like(user=request.user, content_object=comment)
-            new_like.save()
+        if request.user != comment.author:
+            if like.exists():
+                like.delete()
+            else:
+                new_like = Like(user=request.user, content_object=comment)
+                new_like.save()
 
+        data = {
+            "liked": comment.likes.filter(user=request.user).exists(),
+            "likes": comment.likes_count(),
+        }
+
+        return JsonResponse(data, safe=False)
     return HttpResponseRedirect(reverse_lazy("article", kwargs={"pk": article_id}))

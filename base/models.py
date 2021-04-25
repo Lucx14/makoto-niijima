@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
+
 # For adding images
 # https://www.geeksforgeeks.org/python-uploading-images-in-django/
 # https://learndjango.com/tutorials/django-file-and-image-uploads-tutorial
@@ -13,7 +14,7 @@ class Article(models.Model):
     title = models.CharField(max_length=200)
     body = models.TextField()
     published = models.BooleanField(default=True)
-    likes = GenericRelation('Like', 'object_id', 'content_type_id')
+    likes = GenericRelation("Like", "object_id", "content_type_id")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -33,7 +34,7 @@ class Comment(models.Model):
         Article, on_delete=models.CASCADE, null=True, blank=True
     )
     content = models.CharField(max_length=200)
-    likes = GenericRelation('Like', 'object_id', 'content_type_id')
+    likes = GenericRelation("Like", "object_id", "content_type_id")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -53,5 +54,7 @@ class Like(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['object_id', 'content_type_id', 'user_id'], name='unique like')
+            models.UniqueConstraint(
+                fields=["object_id", "content_type_id", "user_id"], name="unique like"
+            )
         ]

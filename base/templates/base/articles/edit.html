@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>Edit article form!</h1>
-    <a href="{% url 'articles' %}">Go back</a>
+    <a href="{% url 'article' article.id %}">Go back</a>
 
     <form action="" method="POST">
         {% csrf_token %}

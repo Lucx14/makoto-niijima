@@ -5,14 +5,20 @@
     <a href="{% url 'articles' %}">Go back</a>
     <h1>{{ article.title }}</h1>
     <h3>{{ article.author }}</h3>
-    <p>{{ article.likes_count }} Likes!</p>
-    <div class="counter-test" id="counter-test-id"></div>
     {% if request.user.is_authenticated and request.user != article.author %}
-        {% if liked_by_logged_in_user %}
-            <div><a href="{% url 'toggle_like' article.id %}"><i class="fas fa-heart"></i></a></div>
-        {% else %}
-            <div><a href="{% url 'toggle_like' article.id %}"><i class="far fa-heart"></i></a></div>
-        {% endif %}
+        <form action="{% url 'toggle_like' article.id %}" method="POST" class="like-form" id="{{ article.id }}">
+            {% csrf_token %}
+            <input type="hidden" name="article_id" value="{{ article.id }}">
+            <button type="submit" class="like-toggler-class" id="like-toggler">
+                {% if liked_by_logged_in_user %}
+                    <i class="fas fa-heart"></i>
+                {% else %}
+                    <i class="far fa-heart"></i>
+                {% endif %}
+            </button>
+            <div class="article-like-count">{{ article.likes_count }}</div>
+            Likes
+        </form>
     {% endif %}
     {% if request.user.is_authenticated and request.user == article.author %}
         <div><a href="{% url 'article-edit' article.id %}">Edit</a></div>
@@ -22,23 +28,34 @@
     <img src="https://picsum.photos/400/300" alt="some random image">
     <p>{{ article.body }}</p>
     {% if request.user.is_authenticated %}
-        <div><a href="{% url 'comment-new' article.id %}">Comment</a></div>
+        <button class="toggle-comments-visibility"><i class="fas fa-comment"></i> 136 Comments</button>
     {% endif %}
-    <div class="comments-wrapper">
+    <div class="comments-wrapper" hidden>
+        <a href="{% url 'comment-new' article.id %}">Write a comment...</a>
         {% for comment in comments %}
             <div class="comment-wrapper">
                 <div>Posted by: {{ comment.author }} on {{ comment.created_at }}</div>
                 <div>{{ comment.content }}</div>
-                {% if request.user != comment.author %}
-                    {% if comment|liked_by:request.user %}
-                        <div><a href="{% url 'toggle_comment_like' article.id comment.id %}"><i
-                                class="fas fa-heart"></i></a></div>
-                    {% else %}
-                        <div><a href="{% url 'toggle_comment_like' article.id comment.id %}"><i
-                                class="far fa-heart"></i></a></div>
-                    {% endif %}
+                {% if request.user.is_authenticated and request.user != comment.author %}
+                    <form action="{% url 'toggle_comment_like' article.id comment.id %}" method="POST"
+                          class="comment-like-form" id="{{ comment.id }}">
+                        {% csrf_token %}
+                        <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                        <button type="submit" class="comment-like-toggler-class" id="comment-like-toggler">
+                            {% if comment|liked_by:request.user %}
+                                <i class="fas fa-heart"></i>
+                            {% else %}
+                                <i class="far fa-heart"></i>
+                            {% endif %}
+                        </button>
+                        <div class="comment-like-count{{ comment.id }}">{{ comment.likes_count }}</div>
+                        Likes
+                    </form>
                 {% endif %}
-                <p>{{ comment.likes_count }} Likes</p>
+            </div>
+        {% empty %}
+            <div>
+                <h3>No Comments</h3>
             </div>
         {% endfor %}
     </div>
@@ -46,6 +63,88 @@
 
 {% block javascript %}
     <script>
-        console.log('Javascript Enabled Local to template file')
+        $(document).ready(function () {
+            console.log('Javascript Enabled Local to template file')
+
+            $('.like-form').submit(function (event) {
+                event.preventDefault();
+
+                let res;
+                const articleId = $(this).attr('id');
+                const url = $(this).attr('action');
+                const likes = $('.article-like-count').text();
+                const parsedCount = parseInt(likes);
+                const likeIcon = $(this).find('i');
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'article_id': articleId,
+                    },
+                    success: function () {
+                        if (likeIcon.hasClass("fas fa-heart")) {
+                            likeIcon.removeClass("fas fa-heart");
+                            likeIcon.addClass("far fa-heart");
+                            res = parsedCount - 1;
+                        } else {
+                            likeIcon.removeClass("far fa-heart");
+                            likeIcon.addClass("fas fa-heart");
+                            res = parsedCount + 1;
+                        }
+                        $('.article-like-count').text(res);
+                    },
+                    error: function (response) {
+                        console.log('error!', response);
+                    }
+                });
+            });
+
+            $('.comment-like-form').submit(function (event) {
+                event.preventDefault();
+
+                let res;
+                const commentId = $(this).attr('id');
+                const url = $(this).attr('action');
+                const likes = $(`.comment-like-count${commentId}`).text();
+                const parsedCount = parseInt(likes);
+                const likeIcon = $(this).find('i');
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'comment_id': commentId,
+                    },
+                    success: function () {
+                        if (likeIcon.hasClass("fas fa-heart")) {
+                            likeIcon.removeClass("fas fa-heart");
+                            likeIcon.addClass("far fa-heart");
+                            res = parsedCount - 1;
+                        } else {
+                            likeIcon.removeClass("far fa-heart");
+                            likeIcon.addClass("fas fa-heart");
+                            res = parsedCount + 1;
+                        }
+                        $(`.comment-like-count${commentId}`).text(res);
+                    },
+                    error: function (response) {
+                        console.log('Error!', response);
+                    }
+                });
+            });
+
+            $('.toggle-comments-visibility').click(function () {
+                const section = $(this).parent().find('.comments-wrapper');
+                if (section.is(":hidden")) {
+                    section.slideDown(300);
+
+                } else {
+                    section.slideUp(200)
+                }
+            });
+        });
     </script>
 {% endblock javascript %}

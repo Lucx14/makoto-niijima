@@ -3,7 +3,7 @@
 
 {% block content %}
     <h1>New comment form!</h1>
-    <a href="{% url 'articles' %}">Go back</a>
+    <a href="{% url 'article' article_id %}">Go back</a>
 
     <form action="" method="POST">
         {% csrf_token %}

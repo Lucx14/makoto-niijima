@@ -1,6 +1,6 @@
 {% extends 'base/main.html' %}
 {% block content %}<h1>Confirm delete page</h1>
-    <a href="{% url 'articles' %}">Go back</a>
+    <a href="{% url 'article' article.id %}">Go back</a>
     <form action="" method="POST">
         {% csrf_token %}
         <p>Are you sure you want to delete this article?</p>
