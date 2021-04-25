@@ -8,6 +8,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from .models import Article, Comment, Like
 from .forms import UserSignUpForm
+# Todo: Add images to Articles
+# Todo: Refactor likes to use ajax
+# Todo: Add some testing
+# Todo: a fontawesome comment icon
+# Todo: Show and hide comments
+# Todo: Styling - use a framework
+# https://www.youtube.com/watch?v=kRrPtIjnxqs
 
 
 class SignUpView(generic.edit.CreateView):
@@ -48,10 +55,6 @@ class ArticleIndex(generic.ListView):
     model = Article
     context_object_name = "articles"
     template_name = "base/articles/index.html"
-    # concept of following certain authors like on medium
-    # clicking on author takes you to an that authors page which is a list of all their articles
-    # not sure the route, /users/:id/articles
-    # images
 
 
 class ArticleDetail(LoginRequiredMixin, generic.DetailView):
@@ -66,7 +69,6 @@ class ArticleDetail(LoginRequiredMixin, generic.DetailView):
         return context
 
 
-# maybe this should redirect to article and then user has a button to publish
 class ArticleCreate(LoginRequiredMixin, generic.CreateView):
     model = Article
     fields = ["title", "body", "published"]
@@ -119,18 +121,17 @@ class CommentCreate(LoginRequiredMixin, generic.CreateView):
         return super(CommentCreate, self).form_valid(form)
 
 
-# Do with page reloading first, then with JS/ajax!
-# https://www.youtube.com/watch?v=kRrPtIjnxqs
 @login_required
 def toggle_like(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
     like = article.likes.filter(user=request.user)
 
-    if like.exists():
-        like.delete()
-    else:
-        new_like = Like(user=request.user, content_object=article)
-        new_like.save()
+    if request.user != article.author:
+        if like.exists():
+            like.delete()
+        else:
+            new_like = Like(user=request.user, content_object=article)
+            new_like.save()
 
     return HttpResponseRedirect(reverse_lazy("article", kwargs={"pk": article.id}))
 
@@ -140,10 +141,11 @@ def toggle_comment_like(request, article_id, comment_id):
     comment = get_object_or_404(Comment, pk=comment_id)
     like = comment.likes.filter(user=request.user)
 
-    if like.exists():
-        like.delete()
-    else:
-        new_like = Like(user=request.user, content_object=comment)
-        new_like.save()
+    if request.user != comment.author:
+        if like.exists():
+            like.delete()
+        else:
+            new_like = Like(user=request.user, content_object=comment)
+            new_like.save()
 
     return HttpResponseRedirect(reverse_lazy("article", kwargs={"pk": article_id}))

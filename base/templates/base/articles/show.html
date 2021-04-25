@@ -5,10 +5,9 @@
     <a href="{% url 'articles' %}">Go back</a>
     <h1>{{ article.title }}</h1>
     <h3>{{ article.author }}</h3>
-    <p>Follow</p>
     <p>{{ article.likes_count }} Likes!</p>
     <div class="counter-test" id="counter-test-id"></div>
-    {% if request.user.is_authenticated %}
+    {% if request.user.is_authenticated and request.user != article.author %}
         {% if liked_by_logged_in_user %}
             <div><a href="{% url 'toggle_like' article.id %}"><i class="fas fa-heart"></i></a></div>
         {% else %}
@@ -20,7 +19,7 @@
         <div><a href="{% url 'article-delete' article.id %}">Delete</a></div>
     {% endif %}
     <p>{{ article.created_at }} - 2 min read</p>
-    <img src="{% static 'base/images/pic.png' %}" alt="some random image">
+    <img src="https://picsum.photos/400/300" alt="some random image">
     <p>{{ article.body }}</p>
     {% if request.user.is_authenticated %}
         <div><a href="{% url 'comment-new' article.id %}">Comment</a></div>
@@ -30,15 +29,23 @@
             <div class="comment-wrapper">
                 <div>Posted by: {{ comment.author }} on {{ comment.created_at }}</div>
                 <div>{{ comment.content }}</div>
-                {% if comment|liked_by:request.user %}
-                    <div><a href="{% url 'toggle_comment_like' article.id comment.id %}"><i
-                            class="fas fa-heart"></i></a></div>
-                {% else %}
-                    <div><a href="{% url 'toggle_comment_like' article.id comment.id %}"><i
-                            class="far fa-heart"></i></a></div>
+                {% if request.user != comment.author %}
+                    {% if comment|liked_by:request.user %}
+                        <div><a href="{% url 'toggle_comment_like' article.id comment.id %}"><i
+                                class="fas fa-heart"></i></a></div>
+                    {% else %}
+                        <div><a href="{% url 'toggle_comment_like' article.id comment.id %}"><i
+                                class="far fa-heart"></i></a></div>
+                    {% endif %}
                 {% endif %}
                 <p>{{ comment.likes_count }} Likes</p>
             </div>
         {% endfor %}
     </div>
 {% endblock content %}
+
+{% block javascript %}
+    <script>
+        console.log('Javascript Enabled Local to template file')
+    </script>
+{% endblock javascript %}
