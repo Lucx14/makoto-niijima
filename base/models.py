@@ -4,10 +4,6 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 
-# For adding images
-# https://www.geeksforgeeks.org/python-uploading-images-in-django/
-# https://learndjango.com/tutorials/django-file-and-image-uploads-tutorial
-
 
 class Article(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -15,6 +11,7 @@ class Article(models.Model):
     body = models.TextField()
     published = models.BooleanField(default=True)
     likes = GenericRelation("Like", "object_id", "content_type_id")
+    image = models.ImageField(upload_to="images/", null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -26,7 +26,7 @@ class ArticleAdmin(admin.ModelAdmin):
     )
     fieldsets = [
         (None, {"fields": ["author", "published"]}),
-        ("Article Content", {"fields": ["title", "body"]}),
+        ("Article Content", {"fields": ["title", "body", "image"]}),
     ]
     inlines = [CommentInline]
 

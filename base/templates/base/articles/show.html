@@ -25,7 +25,7 @@
         <div><a href="{% url 'article-delete' article.id %}">Delete</a></div>
     {% endif %}
     <p>{{ article.created_at }} - 2 min read</p>
-    <img src="https://picsum.photos/400/300" alt="some random image">
+    <img src="{{ article.image.url}}" alt="some random image" width="800">
     <p>{{ article.body }}</p>
     {% if request.user.is_authenticated %}
         <button class="toggle-comments-visibility"><i class="fas fa-comment"></i> 136 Comments</button>

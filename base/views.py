@@ -9,9 +9,9 @@ from django.contrib.auth.decorators import login_required
 from .models import Article, Comment, Like
 from .forms import UserSignUpForm
 
-# Todo: 1) Add images to Articles
 # Todo: 2) Add some testing
 # Todo: 3) Styling - use a framework
+# Todo: 4) Image handling in prod on heroku??
 
 
 class SignUpView(generic.edit.CreateView):
@@ -68,7 +68,7 @@ class ArticleDetail(LoginRequiredMixin, generic.DetailView):
 
 class ArticleCreate(LoginRequiredMixin, generic.CreateView):
     model = Article
-    fields = ["title", "body", "published"]
+    fields = ["title", "body", "published", "image"]
     template_name = "base/articles/new.html"
     success_url = reverse_lazy("articles")
 
