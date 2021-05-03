@@ -1,43 +1,33 @@
 {% extends 'base/main.html' %}
 {% load static %}
 {% block content %}
-    <div class="nav">
-        <h1>MEDIUM</h1>
-        {% if request.user.is_authenticated %}
-            <h4>Logged in user: {{ request.user }}</h4>
-            <a href="{% url 'logout' %}">Logout</a>
-        {% else %}
-            <h4>User is not logged in</h4>
-            <a href="{% url 'login' %}">Login</a>
-            <a href="{% url 'signup' %}">Sign up</a>
-        {% endif %}
-        <a href="{% url 'admin:index' %}">Admin Panel</a>
-        {% if request.user.is_authenticated %}
-            <a href="{% url 'article-new' %}">New Article</a>
-        {% endif %}
-    </div>
-    <div>
-        <div>
-            {% for article in articles %}
-                <div class="article-wrapper">
-                    <div class="article-meta">
-                        <p>Author: {{ article.author }}</p>
-                        <div><a href="{% url 'article' article.id %}">{{ article.title }}</a></div>
-                        <div>Content: {{ article.body }}</div>
-                        <p>Posted date: {{ article.created_at }}</p>
-                        <p>2 min read</p>
-                        <p><a href="{% url 'article' article.id %}">Read more...</a></p>
-                    </div>
-                    <div class="article-image">
-                        <img src="{{ article.image.url }}" alt="some image" width="300">
+    <div class="component-container">
+        {% for article in articles %}
+            <div class="row">
+                <div class="col s12 m8 offset-m2">
+                    <div class="card">
+                        <div class="card-image">
+                            <img src="{{ article.image.url }}" alt="some image" width="300">
+                            <span class="card-title">{{ article.title }}</span>
+                        </div>
+                        <div class="card-content">
+                            <div class="article-meta-info">
+                                <p>Author: {{ article.author }}</p>
+                                <p>Date: {{ article.created_at|date:'d M Y' }}</p>
+                            </div>
+                            <p>{{article.body}}</p>
+                        </div>
+                        <div class="card-action">
+                            <a href="{% url 'article' article.id %}">Read more...</a>
+                        </div>
                     </div>
                 </div>
-            {% empty %}
-                <div>
-                    <h3>No Articles in list</h3>
-                </div>
-            {% endfor %}
-        </div>
+            </div>
+        {% empty %}
+            <div>
+                <h3>No Articles in list</h3>
+            </div>
+        {% endfor %}
     </div>
     <div class="pagination">
         <span class="step-links">
@@ -56,5 +46,14 @@
             {% endif %}
         </span>
     </div>
+    <ul class="pagination">
+        <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+        <li class="active"><a href="#!">1</a></li>
+        <li class="waves-effect"><a href="#!">2</a></li>
+        <li class="waves-effect"><a href="#!">3</a></li>
+        <li class="waves-effect"><a href="#!">4</a></li>
+        <li class="waves-effect"><a href="#!">5</a></li>
+        <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+    </ul>
 {% endblock content %}
 

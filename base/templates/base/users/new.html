@@ -1,13 +1,15 @@
 {% extends 'base/main.html' %}
-
 {% block content %}
-    <h1>Sign up</h1>
+    <div class="row">
+        <div class="col s12 m8 offset-m2 login-form">
+            <form method="POST" action="">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" class="waves-effect waves-light btn"value="Sign up">
+            </form>
+            <p>Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+        </div>
+    </div>
+    
 
-    <form method="POST" action="">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Sign up">
-    </form>
-
-    <p>Already have an account? <a href="{% url 'login' %}">Log in</a></p>
 {% endblock content %}

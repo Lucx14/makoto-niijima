@@ -1,12 +1,15 @@
 {% extends 'base/main.html' %}
-
 {% block content %}
-    <h1>New article form!</h1>
-    <a href="{% url 'articles' %}">Go back</a>
+    <div class="row">
+        <div class="col s12 m8 offset-m2 component-container">
+            <a class="waves-effect waves-light btn-small" href="{% url 'articles' %}"><i class="material-icons left">arrow_back</i>Cancel</a>
+            <h3>New article</h3>
 
-    <form action="" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Submit">
-    </form>
+            <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" class="waves-effect waves-light btn component-container" value="Submit">
+            </form>
+        </div>
+    </div>
 {% endblock content %}

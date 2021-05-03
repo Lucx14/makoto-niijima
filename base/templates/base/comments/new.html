@@ -1,13 +1,16 @@
 {% extends 'base/main.html' %}
-<h1>NEW COMMENT FORM</h1>
-
 {% block content %}
-    <h1>New comment form!</h1>
-    <a href="{% url 'article' article_id %}">Go back</a>
+<div class="row">
+    <div class="col s12 m8 offset-m2 component-container">
+        <a class="waves-effect waves-light btn-small" href="{% url 'article' article_id %}"><i class="material-icons left">arrow_back</i>Cancel</a>
+        <h4>Add a comment...</h4>
 
-    <form action="" method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Submit">
-    </form>
+        <form action="" method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" class="waves-effect waves-light btn component-container" value="Submit">
+        </form>
+    </div>
+</div>
+
 {% endblock content %}

@@ -21,6 +21,9 @@ class Article(models.Model):
     def likes_count(self):
         return self.likes.count()
 
+    def comments_count(self):
+        return self.comment_set.count()
+
     def liked_by(self, user):
         return self.likes.filter(user=user).exists()
 

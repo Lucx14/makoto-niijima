@@ -9,8 +9,10 @@ from django.contrib.auth.decorators import login_required
 from .models import Article, Comment, Like
 from .forms import UserSignUpForm
 
-# Todo: 2) Add some testing
 # Todo: 3) Styling - use a framework
+# Fix pagination
+# fix javascript for the likes
+# write footer
 # Todo: 4) Image handling in prod on heroku??
 
 

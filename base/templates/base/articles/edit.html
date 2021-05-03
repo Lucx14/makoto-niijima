@@ -1,12 +1,14 @@
 {% extends 'base/main.html' %}
-
 {% block content %}
-    <h1>Edit article form!</h1>
-    <a href="{% url 'article' article.id %}">Go back</a>
-
-    <form action="" method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Submit">
-    </form>
+    <div class="row">
+        <div class="col s12 m8 offset-m2 component-container">
+            <a class="waves-effect waves-light btn-small" href="{% url 'article' article.id %}"><i class="material-icons left">arrow_back</i>Cancel</a>
+            <h3>Edit article</h3>
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" class="waves-effect waves-light btn component-container" value="Submit">
+            </form>
+        </div>
+    </div>
 {% endblock content %}
