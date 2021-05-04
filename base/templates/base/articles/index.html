@@ -15,7 +15,7 @@
                                 <p>Author: {{ article.author }}</p>
                                 <p>Date: {{ article.created_at|date:'d M Y' }}</p>
                             </div>
-                            <p>{{article.body}}</p>
+                            <p>{{article.body|truncatewords:20}}</p>
                         </div>
                         <div class="card-action">
                             <a href="{% url 'article' article.id %}">Read more...</a>
@@ -29,31 +29,72 @@
             </div>
         {% endfor %}
     </div>
-    <div class="pagination">
-        <span class="step-links">
-            {% if page_obj.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+    {% if is_paginated %}
+        <ul class="pagination">
+            {% if page_obj.number == 1 %}
+                <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+            {% else %}
+                <li class="waves-effect"><a href="?page={{page_obj.previous_page_number}}"><i class="material-icons">chevron_left</i></a></li>
             {% endif %}
+            {% if paginator.num_pages < 5 %}
+                {% for number in paginator.page_range %}
+                    {% if number == page_obj.number %}
+                        <li class="active"><a href="?page={{number}}">{{number}}</a></li>
+                    {% else %}
+                        <li class="waves-effect"><a href="?page={{number}}">{{number}}</a></li>
+                    {% endif %}
+                {% endfor %}
 
-            <span class="current">
-                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-            </span>
+            {% else %}
+                {% if not page_obj.has_previous %}
+                    <li class="active"><a href="?page={{ page_obj.number }}">{{ page_obj.number }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.next_page_number|add:"1" }}">{{ page_obj.next_page_number|add:"1" }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.next_page_number|add:"2" }}">{{ page_obj.next_page_number|add:"2" }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.next_page_number|add:"3" }}">{{ page_obj.next_page_number|add:"3" }}</a></li>
+                {% endif %}
 
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">next</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% if not page_obj.number|add:"-2" in paginator.page_range and page_obj.has_next and page_obj.has_previous %}
+                    {# o x o o o #}
+                    <li class="waves-effect"><a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a></li>
+                    <li class="active"><a href="?page={{ page_obj.number }}">{{ page_obj.number }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.next_page_number|add:"1" }}">{{ page_obj.next_page_number|add:"1" }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.next_page_number|add:"2" }}">{{ page_obj.next_page_number|add:"2" }}</a></li>
+                {% endif %}
+
+                {% if page_obj.number|add:"2" in paginator.page_range and page_obj.number|add:"-2" in paginator.page_range %}
+                    {# o o x o o #}
+                    <li class="waves-effect"><a href="?page={{ page_obj.previous_page_number|add:"-1" }}">{{ page_obj.previous_page_number|add:"-1" }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a></li>
+                    <li class="active"><a href="?page={{ page_obj.number }}">{{ page_obj.number }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.next_page_number|add:"1" }}">{{ page_obj.next_page_number|add:"1" }}</a></li>
+                {% endif %}
+
+                 {% if not page_obj.number|add:"2" in paginator.page_range and page_obj.has_next %}
+                    {# o o o x o #}
+                    <li class="waves-effect"><a href="?page={{ page_obj.previous_page_number|add:"-2" }}">{{ page_obj.previous_page_number|add:"-2" }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.previous_page_number|add:"-1" }}">{{ page_obj.previous_page_number|add:"-1" }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a></li>
+                    <li class="active"><a href="?page={{ page_obj.number }}">{{ page_obj.number }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+                {% endif %}
+
+                {% if not page_obj.has_next %}
+                    {# o o o o x #}
+                    <li class="waves-effect"><a href="?page={{ page_obj.previous_page_number|add:"-3"  }}">{{ page_obj.previous_page_number|add:"-3"  }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.previous_page_number|add:"-2" }}">{{ page_obj.previous_page_number|add:"-2" }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.previous_page_number|add:"-1" }}">{{ page_obj.previous_page_number|add:"-1" }}</a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a></li>
+                    <li class="active"><a href="?page={{ page_obj.number }}">{{ page_obj.number }}</a></li>
+                {% endif %}
             {% endif %}
-        </span>
-    </div>
-    <ul class="pagination">
-        <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-        <li class="active"><a href="#!">1</a></li>
-        <li class="waves-effect"><a href="#!">2</a></li>
-        <li class="waves-effect"><a href="#!">3</a></li>
-        <li class="waves-effect"><a href="#!">4</a></li>
-        <li class="waves-effect"><a href="#!">5</a></li>
-        <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-    </ul>
+            {% if page_obj.number == page_obj.paginator.num_pages %}
+                <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+            {% else %}
+                <li class="waves-effect"><a href="?page={{page_obj.next_page_number}}"><i class="material-icons">chevron_right</i></a></li>
+            {% endif%}
+        </ul>
+    {% endif %}
 {% endblock content %}
-

@@ -70,3 +70,18 @@ body {
     padding: 1rem;
     font-size: 1.1rem;
 }
+
+.article-page-wrapper {
+    margin-top: 6rem;
+}
+
+.new-article-top-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.article-page-image {
+    width: 100%;
+    height: auto;
+}

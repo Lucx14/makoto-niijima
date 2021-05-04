@@ -2,77 +2,79 @@
 {% load static %}
 {% load base_extras %}
 {% block content %}
-    <h1>{{ article.title }}</h1>
-    {% if request.user.is_authenticated and request.user != article.author %}
-        <form action="{% url 'toggle_like' article.id %}" method="POST" class="like-form" id="{{ article.id }}">
-            {% csrf_token %}
-            <input type="hidden" name="article_id" value="{{ article.id }}">
-            <div class="likes-function">
-                <button type="submit" class="like-toggler-class btn-floating btn-small waves-effect waves-light red" id="like-toggler">
-                    {% if liked_by_logged_in_user %}
-                        <i class="fas fa-heart"></i>
-                    {% else %}
-                        <i class="far fa-heart"></i>
-                    {% endif %}
-                </button>
-                <div class="likes-counter">
-                    <div class="article-like-count">{{ article.likes_count }}</div>
-                    <div>Like{{article.likes_count|pluralize}}</div>
-                </div>
-            </div>
-        </form>
-    {% endif %}
-    {% if request.user.is_authenticated and request.user == article.author %}
-        <a class="btn-floating btn-medium waves-effect waves-light red" href="{% url 'article-edit' article.id %}"><i class="material-icons">edit</i></a>
-        <a class="btn-floating btn-medium waves-effect waves-light red" href="{% url 'article-delete' article.id %}"><i class="material-icons">delete</i></a>
-    {% endif %}
-    <div class="article-meta-info">
-        <div>Author: {{ article.author }}</div>
-        <div>Date: {{ article.created_at|date:'d M Y' }}</div>
-    </div>
-    <img src="{{ article.image.url}}" alt="some random image" width="800">
-    <p>{{ article.body }}</p>
-    {% if request.user.is_authenticated %}
-        <div class="toggle-comments-visibility">
-            <a class="waves-effect waves-light btn-small"><i class="fas fa-comment left"></i>{{ article.comments_count }} Comment{{article.comments_count|pluralize}}</a>
-        </div>
-    {% endif %}
-    <div class="comments-wrapper" hidden>
-        <a class="waves-effect waves-light btn-small" href="{% url 'comment-new' article.id %}"><i class="material-icons left">create</i>Comment</a>
-        {% for comment in comments %}
-            <div class="comment-wrapper">
-                <div class="comment-meta-data">
-                    <div class="comment-top-meta">
-                        <div>Posted by: {{ comment.author }}</div>
-                        <div>Date: {{ comment.created_at|date:'d M Y' }}</div>
-                    </div>
-                    <div class="comment-like-meta">
-                        {% if request.user.is_authenticated and request.user != comment.author %}
-                            <form action="{% url 'toggle_comment_like' article.id comment.id %}" method="POST"
-                                class="comment-like-form" id="{{ comment.id }}">
-                                {% csrf_token %}
-                                <input type="hidden" name="comment_id" value="{{ comment.id }}">
-                                <div class="likes-function">
-                                    <button type="submit" class="comment-like-toggler-class btn-floating btn-small waves-effect waves-light red" id="comment-like-toggler">
-                                        {% if comment|liked_by:request.user %}
-                                            <i class="fas fa-heart"></i>
-                                        {% else %}
-                                            <i class="far fa-heart"></i>
-                                        {% endif %}
-                                    </button>
-                                    <div class="likes-counter">
-                                        <div class="comment-like-count{{ comment.id }}">{{ comment.likes_count }}</div>
-                                        <div>Like{{comment.likes_count|pluralize}}</div>
-                                    </div>
-                                </div>
-                            </form>
+    <div class="article-page-wrapper">
+        <h1>{{ article.title }}</h1>
+        {% if request.user.is_authenticated and request.user != article.author %}
+            <form action="{% url 'toggle_like' article.id %}" method="POST" class="like-form" id="{{ article.id }}">
+                {% csrf_token %}
+                <input type="hidden" name="article_id" value="{{ article.id }}">
+                <div class="likes-function">
+                    <button type="submit" class="like-toggler-class btn-floating btn-small waves-effect waves-light red" id="like-toggler">
+                        {% if liked_by_logged_in_user %}
+                            <i class="fas fa-heart"></i>
+                        {% else %}
+                            <i class="far fa-heart"></i>
                         {% endif %}
+                    </button>
+                    <div class="likes-counter">
+                        <div class="article-like-count">{{ article.likes_count }}</div>
+                        <div class="article-like-count-text">Like{{article.likes_count|pluralize}}</div>
                     </div>
                 </div>
-                <div class="comment-body-content">{{ comment.content }}</div>
-                <hr>
+            </form>
+        {% endif %}
+        {% if request.user.is_authenticated and request.user == article.author %}
+            <a class="btn-floating btn-medium waves-effect waves-light" href="{% url 'article-edit' article.id %}"><i class="material-icons">edit</i></a>
+            <a class="btn-floating btn-medium waves-effect waves-light" href="{% url 'article-delete' article.id %}"><i class="material-icons">delete</i></a>
+        {% endif %}
+        <div class="article-meta-info">
+            <div>Author: {{ article.author }}</div>
+            <div>Date: {{ article.created_at|date:'d M Y' }}</div>
+        </div>
+        <img class="article-page-image" src="{{ article.image.url}}" alt="some random image" width="800">
+        <p>{{ article.body }}</p>
+        {% if request.user.is_authenticated %}
+            <div class="toggle-comments-visibility">
+                <a class="waves-effect waves-light btn-small"><i class="fas fa-comment left"></i>{{ article.comments_count }} Comment{{article.comments_count|pluralize}}</a>
             </div>
-        {% endfor %}
+        {% endif %}
+        <div class="comments-wrapper" hidden>
+            <a class="waves-effect waves-light btn-small" href="{% url 'comment-new' article.id %}"><i class="material-icons left">create</i>Comment</a>
+            {% for comment in comments %}
+                <div class="comment-wrapper">
+                    <div class="comment-meta-data">
+                        <div class="comment-top-meta">
+                            <div>Posted by: {{ comment.author }}</div>
+                            <div>Date: {{ comment.created_at|date:'d M Y' }}</div>
+                        </div>
+                        <div class="comment-like-meta">
+                            {% if request.user.is_authenticated and request.user != comment.author %}
+                                <form action="{% url 'toggle_comment_like' article.id comment.id %}" method="POST"
+                                    class="comment-like-form" id="{{ comment.id }}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                                    <div class="likes-function">
+                                        <button type="submit" class="comment-like-toggler-class btn-floating btn-small waves-effect waves-light red" id="comment-like-toggler">
+                                            {% if comment|liked_by:request.user %}
+                                                <i class="fas fa-heart"></i>
+                                            {% else %}
+                                                <i class="far fa-heart"></i>
+                                            {% endif %}
+                                        </button>
+                                        <div class="likes-counter">
+                                            <div class="comment-like-count{{ comment.id }}">{{ comment.likes_count }}</div>
+                                            <div class="comment-like-count-text{{ comment.id}}">Like{{comment.likes_count|pluralize}}</div>
+                                        </div>
+                                    </div>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="comment-body-content">{{ comment.content }}</div>
+                    <hr>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock content %}
 
@@ -85,6 +87,7 @@
                 event.preventDefault();
 
                 let res;
+                let likeText;
                 const articleId = $(this).attr('id');
                 const url = $(this).attr('action');
                 const likes = $('.article-like-count').text();
@@ -108,7 +111,14 @@
                             likeIcon.addClass("fas fa-heart");
                             res = parsedCount + 1;
                         }
+                        if (res === 1) {
+                            likeText = "Like";
+                        } else {
+                            likeText = "Likes"
+                        }
+                        
                         $('.article-like-count').text(res);
+                        $('.article-like-count-text').text(likeText);
                     },
                     error: function (response) {
                         console.log('error!', response);
@@ -120,6 +130,7 @@
                 event.preventDefault();
 
                 let res;
+                let commentLikeText;
                 const commentId = $(this).attr('id');
                 const url = $(this).attr('action');
                 const likes = $(`.comment-like-count${commentId}`).text();
@@ -143,7 +154,14 @@
                             likeIcon.addClass("fas fa-heart");
                             res = parsedCount + 1;
                         }
+                        if (res === 1) {
+                            commentLikeText = "Like";
+                        } else {
+                            commentLikeText = "Likes";
+                        }
+
                         $(`.comment-like-count${commentId}`).text(res);
+                        $(`.comment-like-count-text${commentId}`).text(commentLikeText);
                     },
                     error: function (response) {
                         console.log('Error!', response);

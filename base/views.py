@@ -9,10 +9,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Article, Comment, Like
 from .forms import UserSignUpForm
 
-# Todo: 3) Styling - use a framework
-# Fix pagination
-# fix javascript for the likes
-# write footer
+# deploy
 # Todo: 4) Image handling in prod on heroku??
 
 
@@ -81,7 +78,7 @@ class ArticleCreate(LoginRequiredMixin, generic.CreateView):
 
 class ArticleUpdate(LoginRequiredMixin, generic.UpdateView):
     model = Article
-    fields = ["title", "body", "published"]
+    fields = ["title", "body", "image"]
     template_name = "base/articles/edit.html"
     success_url = reverse_lazy("articles")
 
