@@ -126,3 +126,5 @@ $ docker exec -it makoto-niijima_web_1 python manage.py shell
 $ ds_console
 $ exit()
 ```
+
+Deploy resource: https://testdriven.io/blog/dockerizing-django-with-postgres-gunicorn-and-nginx/
