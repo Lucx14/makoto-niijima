@@ -1,4 +1,14 @@
-### Makoto Niijima
+# Makoto Niijima
+
+> A simple blog type CRUD app built using Django and styled with Materialize css.
+>
+> Hosted at: TBD
+>
+> Demo below...
+
+## Demo
+
+<img src="public/demo.gif" width="600" />
 
 # To run using docker
 
@@ -116,3 +126,5 @@ $ docker exec -it makoto-niijima_web_1 python manage.py shell
 $ ds_console
 $ exit()
 ```
+
+Deploy resource: https://testdriven.io/blog/dockerizing-django-with-postgres-gunicorn-and-nginx/
