@@ -1,0 +1,42 @@
+# pull official base image
+FROM python:3.9-alpine
+
+# set work directory
+WORKDIR /app
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV DEBUG 0
+ENV DJANGO_ALLOWED_HOSTS localhost 127.0.0.1 [::1]
+ENV SECRET_KEY change_me
+
+# Install Alpine dependencies
+RUN apk update \
+  && apk add --virtual build-deps \
+  && apk add gcc \
+  && apk add python3-dev \
+  && apk add musl-dev \
+  && apk add postgresql-dev \
+  && apk add libpq \
+  && apk add jpeg-dev \
+  && apk add zlib-dev \
+  && apk del build-deps
+
+# install project dependencies
+RUN pip install --upgrade pip
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# copy project
+COPY . .
+
+# collect static files
+RUN python manage.py collectstatic --noinput
+
+# add and run as non-root user
+RUN adduser -D myuser
+USER myuser
+
+# run gunicorn
+CMD gunicorn makoto_niijima.wsgi:application --bind 0.0.0.0:$PORT
