@@ -7,3 +7,4 @@ __pycache__
 .env.production
 .env.production.db
 .vscode
+mediafiles
