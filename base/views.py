@@ -9,9 +9,6 @@ from django.contrib.auth.decorators import login_required
 from .models import Article, Comment, Like
 from .forms import UserSignUpForm
 
-# deploy
-# Todo: 4) Image handling in prod on heroku??
-
 
 class SignUpView(generic.edit.CreateView):
     template_name = "base/users/new.html"
