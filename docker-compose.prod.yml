@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
+    image: 542430024096.dkr.ecr.eu-west-2.amazonaws.com/django-ec2:web
     command: gunicorn makoto_niijima.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_volume:/home/app/web/staticfiles
@@ -13,25 +14,39 @@ services:
       - 8000
     env_file:
       - .env.production
-    depends_on:
-      - db
-  db:
-    image: postgres:13.2-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - .env.production.db
-  nginx:
-    build: ./nginx
+  nginx-proxy:
+    container_name: nginx-proxy
+    build: nginx
+    image: 542430024096.dkr.ecr.eu-west-2.amazonaws.com/django-ec2:nginx-proxy
+    restart: always
+    ports:
+      - 443:443
+      - 80:80
     volumes:
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
-    ports:
-      - 1337:80
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
     depends_on:
       - web
+  nginx-proxy-letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    env_file:
+      - .env.production.proxy-companion
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+    depends_on:
+      - nginx-proxy
 
 volumes:
   postgres_data:
   static_volume:
   media_volume:
+  certs:
+  html:
+  vhost:

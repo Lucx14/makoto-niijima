@@ -129,8 +129,9 @@ $ exit()
 
 Deploy resource: https://testdriven.io/blog/dockerizing-django-with-postgres-gunicorn-and-nginx/
 S3: https://testdriven.io/blog/storing-django-static-and-media-files-on-amazon-s3/
+Deploy to AWS: https://testdriven.io/blog/django-docker-https-aws/
 
-# Start a production docker environment
+# Start a production docker environment (inside the AWS EC2 instance)
 
 ```
 $ docker-compose -f docker-compose.prod.yml up -d --build
@@ -139,3 +140,5 @@ $ docker-compose -f docker-compose.prod.yml exec web python manage.py collectsta
 $ docker-compose -f docker-compose.prod.yml down -v
 $ docker-compose -f docker-compose.prod.yml exec web /bin/sh
 ```
+
+Web app deployed (temporarily) at: https://little-universe-makoto.xyz/
