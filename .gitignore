@@ -6,5 +6,8 @@ __pycache__
 .env.development
 .env.production
 .env.production.db
+.env.staging
+.env.staging.db
+.env.staging.proxy-companion
 .vscode
 mediafiles
