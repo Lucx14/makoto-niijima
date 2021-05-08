@@ -2,7 +2,7 @@
 
 > A simple blog type CRUD app built using Django and styled with Materialize css.
 >
-> Hosted at: TBD
+> Hosted at: https://little-universe-makoto.xyz/ (Temporarily)
 >
 > Demo below...
 
